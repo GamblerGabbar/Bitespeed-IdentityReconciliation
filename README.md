@@ -1,47 +1,69 @@
-# Installation Guide
+# Bitespeed Identity Reconciliation
 
-## Docker Compose Commands
+A web service that identifies and consolidates customer contact information across multiple purchases.
 
-### To deploy using Docker:
+## 🚀 Live API
 
-Start services:
+**Base URL:** https://bitespeed-identityreconciliation.onrender.com/
 
-```bash
-sudo docker-compose up
+**Endpoint:** `POST /identify`
+
+## 📋 Quick Start
+
+### Request
+```json
+{
+  "email": "example@email.com",
+  "phoneNumber": "1234567890"
+}
 ```
 
-Start services with build:
-
-```bash
-sudo docker-compose up --build
+### Response
+```json
+{
+  "contact": {
+    "primaryContatctId": 1,
+    "emails": ["example@email.com"],
+    "phoneNumbers": ["1234567890"],
+    "secondaryContactIds": []
+  }
+}
 ```
 
-Stop services:
+## 🛠️ Tech Stack
+
+- **Backend:** Node.js with TypeScript
+- **Database:** PostgreSQL
+- **Framework:** Express.js
+- **Hosting:** Render.com
+
+## 💻 Local Setup
 
 ```bash
-sudo docker-compose down
+# Clone repository
+git clone https://github.com/GamblerGabbar/Bitespeed-IdentityReconciliation.git
+
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env
+
+# Run development server
+npm run dev
 ```
 
-Stop services and remove volumes:
+## 📝 Features
 
-```bash
-sudo docker-compose down -v
-```
+- Links contacts by email or phone number
+- Maintains primary-secondary relationships
+- Consolidates multiple customer identities
+- Handles complex linking scenarios
 
-## PostgreSQL Setup Commands
+## 🔗 Repository
 
-### To run locally for development purposes:
+GitHub: https://github.com/GamblerGabbar/Bitespeed-IdentityReconciliation
 
-```bash
-sudo pacman -S postgresql
-sudo -u postgres initdb -D /var/lib/postgres/data
-sudo systemctl start postgresql
-psql -U postgres
+---
 
-CREATE USER example_user WITH PASSWORD 'example_passwd';
-CREATE DATABASE example_db WITH OWNER example_user;
-GRANT ALL PRIVILEGES ON DATABASE example_db TO example_user;
-\q
-
-psql -d example_db -U example_user
-```
+**Note:** At least one of `email` or `phoneNumber` must be provided in the request.
