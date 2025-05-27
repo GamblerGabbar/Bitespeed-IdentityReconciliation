@@ -1,0 +1,51 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitespeed-identity-service-container
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      postgres_service:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_HOST=postgres_service
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - PORT=${PORT}
+    networks:
+      - bs_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres_service:
+    image: postgres:17.2
+    container_name: bs_postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - bs_postgres_data:/var/lib/postgresql/data
+    networks:
+      - bs_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  bs_network:
+    driver: bridge
+volumes:
+  bs_postgres_data:
